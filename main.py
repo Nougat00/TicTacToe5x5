@@ -1,98 +1,124 @@
-from easyAI import TwoPlayerGame, Human_Player, AI_Player, Negamax
+"""
+==========================================
+Fuzzy Control System Documentation: Fuel Dose Calculation
+==========================================
 
+Overview
+--------
+This documentation provides information about a Fuzzy Control System for calculating the fuel dose
+in an engine. The system is implemented using the scikit-fuzzy library in Python. It takes into account three input
+variables: temperature of the coolant, demand for power, and air pressure, and provides a fuel dose as the output.
 
-"""This is extended TicTacToe Game that has 5x5 board.
-We can use command 'show moves' to display available moves.
-To move we should choose one move from list by typing 'move #number' ex 'move #1'
-To win player has to has 5 marks in row, column or diagonally.
+Problem Description
+-------------------
+The primary objective of this Fuzzy Control System is to determine the
+appropriate fuel dose for an engine based on the following input variables:
+- `temperature_coolant`: Temperature of the engine coolant (in degrees Celsius).
+- `demand_power`: Power demand of the engine (ranging from 0 to 100).
+- `air_pressure`: Air pressure in the engine (in hPa).
+
+The output variable is:
+- `fuel_dose`: The recommended fuel dose (in percentage).
+
+Fuzzy Variables and Membership Functions
+----------------------------------------
+1. `temperature_coolant`:
+   - Universe: 0 to 140 degrees Celsius
+   - Fuzzy Sets: 'low', 'medium', 'high'
+
+2. `demand_power`:
+   - Universe: 0 to 100 percent
+   - Fuzzy Sets: 'low', 'medium', 'high'
+
+3. `air_pressure`:
+   - Universe: 900 to 1100 hPa
+   - Fuzzy Sets: 'low', 'medium', 'high'
+
+4. `fuel_dose` (Consequent):
+   - Universe: 0 to 100 percent
+   - Fuzzy Sets: 'low', 'medium', 'high'
+
+Rules
+-----
+The Fuzzy Control System defines nine rules for determining the fuel dose based on the combinations of input variables. The rules are as follows:
+1. IF `temperature_coolant` is high AND `demand_power` is low AND `air_pressure` is low, THEN `fuel_dose` is low.
+2. IF `temperature_coolant` is high AND `demand_power` is medium AND `air_pressure` is medium, THEN `fuel_dose` is low.
+3. IF `temperature_coolant` is high AND `demand_power` is high AND `air_pressure` is high, THEN `fuel_dose` is low.
+4. IF `temperature_coolant` is medium AND `demand_power` is medium AND `air_pressure` is high, THEN `fuel_dose` is medium.
+5. IF `temperature_coolant` is medium AND `demand_power` is high AND `air_pressure` is high, THEN `fuel_dose` is high.
+6. IF `temperature_coolant` is medium AND `demand_power` is high AND `air_pressure` is medium, THEN `fuel_dose` is medium.
+7. IF `temperature_coolant` is low AND `demand_power` is low AND `air_pressure` is low, THEN `fuel_dose` is low.
+8. IF `temperature_coolant` is low AND `demand_power` is high AND `air_pressure` is high, THEN `fuel_dose` is medium.
+9. IF `temperature_coolant` is low AND `demand_power` is low AND `air_pressure` is medium, THEN `fuel_dose` is low.
+
+Usage
+-----
+To calculate the fuel dose for a specific scenario, follow these steps:
+1. Create the `fuel_ctrl` control system using the defined rules.
+2. Create a `fuel_simulation` simulation object for the control system.
+3. Set the input values for `temperature_coolant`, `demand_power`, and `air_pressure`.
+4. Compute the output value for `fuel_dose` using the simulation.
+5. Retrieve the recommended fuel dose from the `fuel_simulation` object.
+
+Example
+-------
+Suppose we want to calculate the fuel dose for the following input values:
+- `temperature_coolant` = 40 degrees Celsius
+- `demand_power` = 100 percent
+- `air_pressure` = 1100 hPa
+
+The system recommends a fuel dose of approximately 57.9.
 
 Created by: Jakub Gola & Bartosz Laskowski
+
 """
-class TicTacToe5x5(TwoPlayerGame):
-    def __init__(self, players):
-        """Initializes the Tic-Tac-Toe game with a 5x5 board and the specified players.
 
-            Parameters:
-            players (list): Players List (np. [Human_Player(), AI_Player()]).
-        """
-        self.players = players
-        self.board = [[0 for _ in range(5)] for _ in range(5)]
-        self.current_player = 1
+import matplotlib.pyplot as plt
+import numpy as np
+import skfuzzy as fuzz
+from skfuzzy import control as ctrl
 
-    def possible_moves(self):
-        # Returns a list of available moves as tuples (row, column).
-        moves = []
-        for i in range(5):
-            for j in range(5):
-                if self.board[i][j] == 0:
-                    moves.append((i, j))
-        return moves
+# Tworzenie zmiennych lingwistycznych i ich funkcji przynależności
+temperature_coolant = ctrl.Antecedent(np.arange(0, 141, 1), 'temperature_coolant')
+demand_power = ctrl.Antecedent(np.arange(0, 101, 1), 'demand_power')
+air_pressure = ctrl.Antecedent(np.arange(900, 1101, 1), 'air_pressure')
+fuel_dose = ctrl.Consequent(np.arange(0, 101, 1), 'fuel_dose')
 
-    def make_move(self, move):
-        """Makes a move on the board based on the specified move (row, column).
+# Użycie automf do zdefiniowania funkcji przynależności
+temperature_coolant.automf(3, names=['low', 'medium', 'high'])
+demand_power.automf(3, names=['low', 'medium', 'high'])
+air_pressure.automf(3, names=['low', 'medium', 'high'])
 
-        Parameters:
-        move (tuple): Ruch w formie krotki (row, column).
-        """
-        i, j = move
-        self.board[i][j] = self.current_player
+fuel_dose['low'] = fuzz.trimf(fuel_dose.universe, [0, 0, 50])
+fuel_dose['medium'] = fuzz.trimf(fuel_dose.universe, [0, 50, 100])
+fuel_dose['high'] = fuzz.trimf(fuel_dose.universe, [50, 100, 100])
 
-    def lose(self):
-        """Checks if the current player has lost the game.
+# Tworzenie reguł sterowania
+rule1 = ctrl.Rule(temperature_coolant['high'] & demand_power['low'] & air_pressure['low'], fuel_dose['low'])
+rule2 = ctrl.Rule(temperature_coolant['high'] & demand_power['medium'] & air_pressure['medium'], fuel_dose['low'])
+rule3 = ctrl.Rule(temperature_coolant['high'] & demand_power['high'] & air_pressure['high'], fuel_dose['low'])
+rule4 = ctrl.Rule(temperature_coolant['medium'] & demand_power['medium'] & air_pressure['high'], fuel_dose['medium'])
+rule5 = ctrl.Rule(temperature_coolant['medium'] & demand_power['high'] & air_pressure['high'], fuel_dose['high'])
+rule6 = ctrl.Rule(temperature_coolant['medium'] & demand_power['high'] & air_pressure['medium'], fuel_dose['medium'])
+rule7 = ctrl.Rule(temperature_coolant['low'] & demand_power['low'] & air_pressure['low'], fuel_dose['low'])
+rule8 = ctrl.Rule(temperature_coolant['low'] & demand_power['high'] & air_pressure['high'], fuel_dose['medium'])
+rule9 = ctrl.Rule(temperature_coolant['low'] & demand_power['low'] & air_pressure['medium'], fuel_dose['low'])
 
-        Returns:
-        bool: True if player lost, otherwise False
-        """
-        # We check whether one of the players won horizontally, vertically or diagonally
-        for i in range(4):
-            # Checking rows
-            if self.board[i][0] == self.board[i][1] == self.board[i][2] == self.board[i][3] == self.board[i][4] != 0:
-                return True
-            # Checking columns
-            if self.board[0][i] == self.board[1][i] == self.board[2][i] == self.board[3][i] == self.board[i][4] != 0:
-                return True
+# Tworzenie systemu kontrolnego
+fuel_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9])
 
-        # Checking diagonals
-        if self.board[0][0] == self.board[1][1] == self.board[2][2] == self.board[3][3] == self.board[4][4] != 0:
-            return True
+# Tworzenie symulatora
+fuel_simulation = ctrl.ControlSystemSimulation(fuel_ctrl)
 
-        if self.board[0][4] == self.board[1][3] == self.board[2][2] == self.board[3][1] == self.board[4][4] != 0:
-            return True
+# Przypisanie wartości wejściowych
+fuel_simulation.input['temperature_coolant'] = 80  # Temperatura cieczy chłodzącej
+fuel_simulation.input['demand_power'] = 40  # Zapotrzebowanie na moc
+fuel_simulation.input['air_pressure'] = 1023  # Ciśnienie powietrza
 
-        return False
+# Obliczenie wartości wyjściowej
+fuel_simulation.compute()
 
-    def is_over(self):
-        """Checks if the game is over, either due to a player winning or no available moves.
-
-        Returns:
-        bool: True if game is over, otherwise False
-        """
-        return self.lose() or len(self.possible_moves()) == 0
-
-    def show(self):
-        # Displays the current state of the game on the console.
-        for i in range(5):
-            for j in range(5):
-                if self.board[i][j] == 1:
-                    print("X", end=" ")
-                elif self.board[i][j] == 2:
-                    print("O", end=" ")
-                else:
-                    print(".", end=" ")
-            print()
-        print()
-
-    def scoring(self):
-        """Calculates the game score.
-
-        Returns:
-            int: Returns -10 if the current player has lost, else returns 10.
-        """
-        return -10 if game.lose() else 10
-
-
-if __name__ == "__main__":
-    ai_algo = Negamax(6)
-    human = Human_Player()
-    game = TicTacToe5x5([human, AI_Player(ai_algo)])
-    game.play()
+# Wyświetlenie wyniku
+print("Procent dawki paliwa: ", fuel_simulation.output['fuel_dose'])
+fuel_dose.view(sim=fuel_simulation)
+plt.show()
