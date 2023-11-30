@@ -4,17 +4,15 @@ and visualizes the results through a scatter plot and a confusion matrix.
 
 Output:
 - Scatter plot of the input data with two classes: Jasminen (0) and Gonen (1).
-- Classification reports for both the training and test datasets.
-- Confusion matrix with a visualization.
+- Accuracy metrics
 
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 # Load the rice data from the CSV file
 input_file = 'data/riceClassification.csv'
@@ -54,11 +52,4 @@ print("\nClassifier performance on test dataset\n")
 print(classification_report(y_test, y_test_pred, target_names=class_names))
 print("#" * 40 + "\n")
 
-# Calculate and display the confusion matrix
-cm = confusion_matrix(y_test, y_test_pred)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=classifier.classes_)
-disp.plot()
-print(cm)
-
-# Show the plot
 plt.show()

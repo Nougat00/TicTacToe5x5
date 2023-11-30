@@ -3,18 +3,16 @@ This script performs classification on wheat data using a Decision Tree classifi
 and visualizes the results through a scatter plot and a confusion matrix.
 
 Output:
-- Scatter plot of the input data with three classes: class_1, class_2, and class_3.
+- Scatter plot of the input data with three classes: class1, class2, and class3.
 - Classification reports for both the training and test datasets.
-- Confusion matrix with a visualization.
 
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 # Load the wheat data from the CSV file
 input_file = 'data/wheatClassification.csv'
@@ -44,7 +42,7 @@ classifier.fit(X_train, y_train)
 # Make predictions on the test set
 y_test_pred = classifier.predict(X_test)
 
-class_names = ['class_1', 'class_2', 'class_3']
+class_names = ['Class1', 'Class2', 'Class3']
 # Display classification reports for both the training and test datasets
 print("\n" + "#" * 40)
 print("\nClassifier performance on training dataset\n")
