@@ -3,6 +3,7 @@ This script performs classification on wheat data using a Support Vector Machine
 with a radial basis function (RBF) kernel. It visualizes the results through a confusion matrix.
 
 Output:
+- Scatter plot of the input data with three classes: class1, class2, and class3.
 - Accuracy metrics
 
 """
@@ -17,6 +18,18 @@ from sklearn.model_selection import train_test_split
 input_file = 'data/wheatClassification.csv'
 data = np.loadtxt(input_file, delimiter=',')
 X, y = data[:, :-1], data[:, -1]
+
+# Separate the data into three classes: class_1, class_2, and class_3
+class_1 = np.array(X[y == 1])
+class_2 = np.array(X[y == 2])
+class_3 = np.array(X[y == 3])
+
+# Visualize the input data through a scatter plot
+plt.figure()
+plt.scatter(class_1[:, 0], class_1[:, 1], s=75, facecolors='black', linewidth=1, marker='x')
+plt.scatter(class_2[:, 0], class_2[:, 1], s=75, facecolors='white', edgecolors='black', linewidth=1, marker='o')
+plt.scatter(class_3[:, 0], class_3[:, 1], s=75, facecolors='white', edgecolors='red', linewidth=1, marker='v')
+plt.title('Input data')
 
 # Split the data into training and test sets
 X_train, X_test, y_train, y_test = train_test_split(

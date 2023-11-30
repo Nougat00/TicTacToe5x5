@@ -4,7 +4,7 @@ and visualizes the results through a scatter plot and a confusion matrix.
 
 Output:
 - Scatter plot of the input data with three classes: class1, class2, and class3.
-- Classification reports for both the training and test datasets.
+- Accuracy metrics
 
 """
 
