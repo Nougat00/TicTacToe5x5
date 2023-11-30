@@ -56,11 +56,5 @@ print("\nClassifier performance on test dataset\n")
 print(classification_report(y_test, y_test_pred, target_names=class_names))
 print("#" * 40 + "\n")
 
-# Calculate and display the confusion matrix
-cm = confusion_matrix(y_test, y_test_pred)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=classifier.classes_)
-disp.plot()
-print(cm)
-
 # Show the plot
 plt.show()
