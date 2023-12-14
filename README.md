@@ -8,6 +8,7 @@
 
 # 1. Sieć neuronowa klasyfikująca ryż:
 ## Mniejsza sieć
+<img width="583" alt="rice_classification_model" src="https://github.com/Nougat00/TicTacToe5x5/assets/84192254/c175df3a-73ec-4f21-a1df-d17d4907b62e">
 
 
 ## Większa sieć
