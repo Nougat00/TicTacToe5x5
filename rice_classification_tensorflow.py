@@ -1,31 +1,38 @@
+"""
+Prediction of rice choice with two classes: Jasminen (0) and Gonen (1).
+
+Authors: Jakub Gola & Bartosz Laskowski
+"""
+
 import tensorflow as tf
 import pandas as pd
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-'''Wczytywanie danych z pliku csv'''
+# Load the dataset from a CSV file
 data = pd.read_csv('data/riceClassification.csv')
 
-'''Podział danych na cechy (X) i etykiety (Y)'''
+# Extract features (X) and target variable (Y) from the dataset
 X = data[['Area', 'MajorAxisLength', 'MinorAxisLength', 'Eccentricity', 'ConvexArea', 'EquivDiameter', 'Extent', 'Perimeter', 'Roundness', 'AspectRation']]
 Y = data['Class']
 
-'''Podział danych na zestawy treningowe i testowe'''
+# Split the dataset into training and testing sets
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 
-'''Standaryzacja danych'''
+# Standardize the features using StandardScaler
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-'''Definicja modelu TensorFlow'''
+# Create a simple neural network model
 model = tf.keras.Sequential([
     tf.keras.layers.Input(shape=(X_train.shape[1],)),
     tf.keras.layers.Dense(100, activation='relu'),
     tf.keras.layers.Dense(1)
 ])
 
+# Create a more complex neural network model
 big_model = tf.keras.Sequential([
     tf.keras.layers.Input(shape=(X_train.shape[1],)),
     tf.keras.layers.Dense(100, activation='relu'),
@@ -34,24 +41,26 @@ big_model = tf.keras.Sequential([
     tf.keras.layers.Dense(1)
 ])
 
-'''Kompilacja modelu'''
+# Define optimizers and compile the models
 opt = Adam(learning_rate=0.02)
-model.compile(opt, loss='categorical_crossentropy', metrics=['accuracy'])
-big_model.compile(opt, loss='categorical_crossentropy', metrics=['accuracy'])
+opt1 = Adam(learning_rate=0.02)
+model.compile(opt, loss='binary_crossentropy', metrics=['accuracy'])
+big_model.compile(opt1, loss='binary_crossentropy', metrics=['accuracy'])
 
-'''Trenowanie modelu'''
+# Train the models on the training data
 model.fit(X_train, Y_train, epochs=20, batch_size=16)
 big_model.fit(X_train, Y_train, epochs=50, batch_size=16)
 
-
-'''Ocena modelu na zestawie testowym'''
+# Evaluate the models on the test data
 loss, acc = model.evaluate(X_test, Y_test)
 loss_big, acc_big = big_model.evaluate(X_test, Y_test)
+
+# Print the evaluation results
 print(f'Loss (CC) on test data: {loss}')
 print(f'Accuracy on test data: {acc}')
 print(f'Loss (CC) on test data: {loss_big}')
 print(f'Accuracy on test data: {acc_big}')
 
-'''Przewidywanie na podstawie modelu'''
+# Make predictions using the trained models
 predictions = model.predict(X_test)
 predictions_big = big_model.predict(X_test)
