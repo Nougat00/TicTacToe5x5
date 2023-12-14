@@ -1,5 +1,6 @@
 import tensorflow as tf
 import pandas as pd
+from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
@@ -34,12 +35,13 @@ big_model = tf.keras.Sequential([
 ])
 
 '''Kompilacja modelu'''
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-big_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+opt = Adam(learning_rate=0.02)
+model.compile(opt, loss='categorical_crossentropy', metrics=['accuracy'])
+big_model.compile(opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 '''Trenowanie modelu'''
 model.fit(X_train, Y_train, epochs=20, batch_size=16)
-big_model.fit(X_train, Y_train, epochs=20, batch_size=16)
+big_model.fit(X_train, Y_train, epochs=50, batch_size=16)
 
 
 '''Ocena modelu na zestawie testowym'''
