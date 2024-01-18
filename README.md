@@ -26,7 +26,7 @@ pip install pyautogui
 ## Gesture Commands
 The script recognizes the following hand gestures for YouTube player control:
 
-1. **Fist Gesture (1 Finger):**
+1. **One finger (1 Finger):**
    - Fast forward 5 seconds
 
 2. **Two Fingers Gesture (2 Fingers):**
@@ -39,7 +39,7 @@ The script recognizes the following hand gestures for YouTube player control:
    - Decrease volume
 
 5. **Five Fingers Gesture (5 Fingers):**
-   - Stop video
+   - Pause/Unpause video
 
 ## Usage
 1. Run the script using the command: `python main.py`.
